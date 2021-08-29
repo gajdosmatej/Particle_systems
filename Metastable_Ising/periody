@@ -1,0 +1,15 @@
+#!/bin/bash
+
+LANG=en_US
+
+for BETA in $(seq 7.65 0.025 7.75)
+do
+    for ALPHA in $(seq 2 0.25 2)
+    do
+        echo A${ALPHA} B${BETA}
+        python3 simulate.py $ALPHA $BETA
+        python3 T_average.py $ALPHA $BETA
+    done
+done
+
+

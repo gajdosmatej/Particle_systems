@@ -1,0 +1,13 @@
+for f in *.pre; do    
+ ./pre2ppm `basename $f .pre`;  
+# convert -quality 100 `basename $f .pre`.ppm `basename $f .pre`.eps;
+ convert -quality 100 `basename $f .pre`.ppm `basename $f .pre`.pdf;
+done
+rm *.pre;
+rm *.ppm;
+
+#for all files with a name of the form filename.pre do the following:
+#pre2ppm file;
+#convert -quality 100 filename.ppm filename.pdf; OR:
+#convert -quality 100 filename.ppm filename.eps;
+#At the end, throw away the .pre and .ppm files.

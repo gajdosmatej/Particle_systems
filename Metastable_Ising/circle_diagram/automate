@@ -1,0 +1,15 @@
+#!/bin/bash
+
+LANG=en_US
+
+for BETA in $(seq 3.0 0.25 4.5)
+do
+    for ALPHA in $(seq 2 0.25 2)
+    do
+        echo A${ALPHA} B${BETA}
+        python simulate.py $ALPHA $BETA 0.6
+        python draw.py
+        mv circle.jpg pics/A${ALPHA}B${BETA}.jpg
+        #python calc_E.py $ALPHA $BETA
+    done
+done

@@ -1,0 +1,3 @@
+file=$1;
+echo P3 > $file.ppm;
+cat $file.pre >> $file.ppm;

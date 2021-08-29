@@ -1,0 +1,3 @@
+./pre2pict
+pdfunite draw*.pdf film.pdf
+rm draw*.pdf

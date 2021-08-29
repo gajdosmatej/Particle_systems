@@ -1,0 +1,17 @@
+#!/bin/bash
+
+LANG=en_US
+
+for BETA in $(seq 1 0.25 10)
+do
+    for ALPHA in $(seq 1 0.25 1)
+    do
+        echo A${ALPHA} B${BETA}
+        python simulate.py $ALPHA $BETA
+        #python calc_E.py $ALPHA $BETA
+        python graph_expected.py
+        mv ./graph_expected.jpg ./graphs/A${ALPHA}B${BETA}.jpg 
+    done
+done
+
+
