@@ -9,12 +9,12 @@ import numpy
 import time
 import sys
 
-LATTICE_SIDE_LENGTH =20
+LATTICE_SIDE_LENGTH =15
 #LATTICE_SIDE_LENGTH = 15
 N_DIM = 3
 #MAX_TIME = 200
 #STEP_NUM = 1000000
-STEP_NUM = 400000
+STEP_NUM = 1200000
 num_of_iter = 1000
 initial_law = 1
 #initial_law = "diagonal"

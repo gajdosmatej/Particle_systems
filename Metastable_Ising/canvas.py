@@ -1,10 +1,13 @@
 import tkinter
 import json
 import numpy
+import math
 
 side_len = None
 f = None
 canvas_len = 650
+
+offset_vector = (20,20)
 
 def initFile():
     states_dump_file_name = "./states.txt"
@@ -33,12 +36,67 @@ def closeFile():
     f = None
 
 
-def paintCube(row, column, canvas, color):
-    x_begin = column*side_len
+def paintCubeLeft(row, column, canvas, color, lattice_side_length):
+    '''x_begin = column*side_len
     y_begin = row*side_len
     x_end = x_begin + side_len
-    y_end = y_begin + side_len
-    canvas.create_rectangle(x_begin, y_begin, x_end, y_end, fill=color)
+    y_end = y_begin + side_len'''
+
+    w = side_len * math.sqrt(3) / 2
+
+    x1 = column * w + (offset_vector[0] + w)
+    y1 = side_len * (row + column / 2) + (lattice_side_length * side_len / 2 + offset_vector[1] - side_len/2)
+    x2 = x1 + w
+    y2 = y1 + side_len / 2
+    x3 = x1
+    y3 = y1 + side_len
+    x4 = x2
+    y4 = y2 + side_len
+
+    #print([x1, y1, x2, y2, x3, y3, x4, y4])
+    #canvas.create_rectangle(x_begin, y_begin, x_end, y_end, fill=color)
+    canvas.create_polygon((x1, y1), (x2, y2), (x4, y4), (x3, y3), fill=color)
+
+def paintCubeRight(row, column, canvas, color, lattice_side_length):
+    '''x_begin = column*side_len
+    y_begin = row*side_len
+    x_end = x_begin + side_len
+    y_end = y_begin + side_len'''
+    column = lattice_side_length - column   #aby vhodne pasovalo
+    w = side_len * math.sqrt(3) / 2
+
+    x1 = column * w + (offset_vector[0] + w * lattice_side_length)
+    y1 = side_len * (row - column / 2)  + (lattice_side_length * side_len + offset_vector[1])
+    x2 = x1 + w
+    y2 = y1 - side_len / 2
+    x3 = x1
+    y3 = y1 + side_len
+    x4 = x2
+    y4 = y2 + side_len
+
+    #print([x1, y1, x2, y2, x3, y3, x4, y4])
+    #canvas.create_rectangle(x_begin, y_begin, x_end, y_end, fill=color)
+    canvas.create_polygon((x1, y1), (x2, y2), (x4, y4), (x3, y3), fill=color)
+
+def paintCubeTop(row, column, canvas, color, lattice_side_length):
+    '''x_begin = column*side_len
+    y_begin = row*side_len
+    x_end = x_begin + side_len
+    y_end = y_begin + side_len'''
+    w = math.sqrt(3) / 2 * side_len
+
+    x1 = (lattice_side_length + column - row) * w + offset_vector[0]
+    y1 = (column + row) * side_len / 2 + offset_vector[1]
+    x2 = x1 + w
+    y2 = y1 - side_len / 2
+    x3 = x1 + 2*w
+    y3 = y1
+    x4 = x2
+    y4 = y1 + side_len / 2
+
+    #print([x1, y1, x2, y2, x3, y3, x4, y4])
+    #canvas.create_rectangle(x_begin, y_begin, x_end, y_end, fill=color)
+    canvas.create_polygon((x1, y1), (x2, y2), (x3, y3), (x4, y4), fill=color)
 
 
 def collapseHigherDimensions(state, axis):
@@ -63,25 +121,26 @@ def chooseColor(val):
 #nyni jen 3d
 def paintState(state, canvas):
     lattice_side_length = len(state)    #tohle neni uplne bezpecne - spoleham na to, ze vsechny rozmery jsou stejne
+
     sub_state = collapseHigherDimensions(state,0)
 
     for row in range(0, lattice_side_length):
         for column in range(0, lattice_side_length):
             color = chooseColor(sub_state[row][column])
-            paintCube(row, column, canvas, color)
+            paintCubeTop(row, column, canvas, color, lattice_side_length)
 
     sub_state = collapseHigherDimensions(state,1)
 
     for row in range(0, lattice_side_length):
         for column in range(0, lattice_side_length):
             color = chooseColor(sub_state[row][column])
-            paintCube(row+lattice_side_length, column, canvas, color)
+            paintCubeLeft(row, column, canvas, color, lattice_side_length)
 
     sub_state = collapseHigherDimensions(state,2)
     for row in range(0, lattice_side_length):
         for column in range(0, lattice_side_length):
             color = chooseColor(sub_state[row][column])
-            paintCube(column, row+lattice_side_length, canvas, color) #aby steny odpovidaly
+            paintCubeRight(row, column, canvas, color, lattice_side_length) #aby steny odpovidaly
     initLanes(len(state))
 
 
@@ -124,8 +183,23 @@ def reset():
 
 def initLanes(state_len):
     whole_side_len = state_len*side_len
-    canvas.create_line(whole_side_len, 0, whole_side_len, whole_side_len, width=4)
-    canvas.create_line(0, whole_side_len, whole_side_len, whole_side_len, width=4)
+    w = math.sqrt(3) / 2 * side_len
+
+    x = w*state_len + offset_vector[0] + w
+    y1 = offset_vector[1] + whole_side_len - side_len
+    y2 = y1 + whole_side_len
+    canvas.create_line(x, y1, x, y2, width=1)
+
+    y2 = y1
+    x1 = offset_vector[0] + w
+    y1 = offset_vector[1] + whole_side_len / 2 - side_len / 2
+    x2 = x1 + w*state_len
+    canvas.create_line(x1, y1, x2, y2, width=1)
+
+
+    x1 = offset_vector[0] + w + 2*w*state_len
+    y1 = offset_vector[1] + whole_side_len / 2 - side_len / 2
+    canvas.create_line(x1, y1, x2, y2, width=1)
 
 
 def initCanvas():
@@ -139,7 +213,7 @@ lattice_L = len(initFile())
 side_len = canvas_len // (2*lattice_L)
 
 top = tkinter.Tk()
-top.attributes('-zoomed', True)
+#top.attributes('-zoomed', True)
 
 canvas = tkinter.Canvas(top, bg="white", height=canvas_len, width=canvas_len)
 
